@@ -1,19 +1,20 @@
 <% layout("/layouts/boilerplate") %>
+
 <div class="row">
-  <h1 class="text-center">Agregar Nueva Experiencia Laboral</h1>
+  <h1 class="text-center">Editar</h1>
   <div class="col-6 offset-3">
-    <form action="/experiencia" method="POST">
+    <form action="/experiencia/<%= exp._id %>?_method=PUT" method="POST">
       <div class="mb-3">
         <label class="form-label" for="_id">ID</label>
-        <input class="form-control" type="text" id="_id" name="exp[_id]" />
+        <input class="form-control" type="text" id="_id" name="exp[_id]" value="<%= exp._id %>"/>
       </div>
       <div class="mb-3">
         <label class="form-label" for="donde">Donde</label>
-        <input class="form-control" type="text" id="donde" name="exp[donde]" />
+        <input class="form-control" type="text" id="donde" name="exp[donde]" value="<%= exp.donde %>"/>
       </div>
       <div class="mb-3">
         <label class="form-label" for="logo">Logo URL</label>
-        <input class="form-control" type="text" id="logo" name="exp[logo]" />
+        <input class="form-control" type="text" id="logo" name="exp[logo]" value="<%= exp.logo %>"/>
       </div>
       <div class="mb-3">
         <label class="form-label" for="cuando">Cuando</label>
@@ -22,6 +23,7 @@
           type="text"
           id="cuando"
           name="exp[cuando]"
+          value="<%= exp.cuando %>"
         />
       </div>
       <div class="mb-3">
@@ -32,12 +34,12 @@
           type="text"
           id="haciendoQue"
           name="exp[haciendoQue]"
-        /></textarea>
+        /><%= exp.haciendoQue %></textarea>
       </div>
       <div class="mb-3">
-        <button class="btn btn-success">Agregar</button>
+        <button class="btn btn-info">Guardar</button>
       </div>
     </form>
-    <a href="/experiencia">Volver</a>
+    <a href="/experiencia/<%= exp._id %> ">Volver</a>
   </div>
 </div>
