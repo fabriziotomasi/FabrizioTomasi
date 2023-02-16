@@ -2,6 +2,8 @@ const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
+const catchAsync = require("./utilities/catchAsync");
+const ExpressError = require("./utilities/ExpressError");
 const methodOverride = require("method-override");
 const Exp = require("./models/exp");
 
@@ -26,50 +28,56 @@ app.get("/", (req, res) => {
     res.render("home");
 });
 
-app.get("/experiencia", async (req, res) => {
+app.get("/experiencia", catchAsync(async (req, res) => {
     const exps = await Exp.find({});
     res.render("experiencia/index", { exps });
-});
+}));
 
 app.get("/experiencia/nueva", (req, res) => {
     res.render("experiencia/nueva");
 });
 
-app.post("/experiencia", async (req, res) => {
+app.post("/experiencia", catchAsync(async (req, res, next) => {
+    if (!req.body.exp) throw new ExpressError(400, "Nop, te faltó algo o algo salió mal.")
     const exp = new Exp(req.body.exp);
     await exp.save();
     res.redirect(`/experiencia/${exp._id}`);
-});
+}));
 
-app.get("/experiencia/:id", async (req, res) => {
+app.get("/experiencia/:id", catchAsync(async (req, res) => {
     const exp = await Exp.findById(req.params.id);
     res.render("experiencia/detalles", { exp });
-});
+}));
 
-app.get("/experiencia/:id/editar", async (req, res) => {
+app.get("/experiencia/:id/editar", catchAsync(async (req, res) => {
     const exp = await Exp.findById(req.params.id);
     res.render("experiencia/editar", { exp });
-});
+}));
 
-app.put("/experiencia/:id", async (req, res) => {
+app.put("/experiencia/:id", catchAsync(async (req, res) => {
     const { id } = req.params;
     const exp = await Exp.findByIdAndUpdate(id, { ...req.body.exp });
     res.redirect(`/experiencia/${exp._id}`);
-});
+}));
 
-app.delete("/experiencia/:id", async (req, res) => {
+app.delete("/experiencia/:id", catchAsync(async (req, res) => {
     const { id } = req.params;
     await Exp.findByIdAndDelete(id);
     res.redirect("/experiencia");
-});
+}));
 
 app.get("/contacto", (req, res) => {
     res.render("contacto/contacto");
 });
 
-app.use((req, res) => {
-    res.status(404).send("Pa que tocás si no sabes? Rompiste Todo.");
+app.all("*", (req, res, next) => {
+    next(new ExpressError(404, "Page Not Found"));
 })
+
+app.use((err, req, res, next) => {
+    const { statusCode = 500, message = "Algo salió mal :(" } = err;
+    res.status(statusCode).send(message);
+});
 
 app.listen("3000", () => {
     console.log("Serving on port 3000");
