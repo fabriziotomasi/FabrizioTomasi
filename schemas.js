@@ -8,5 +8,5 @@ module.exports.expSchema = Joi.object({
         logo: Joi.string().required(),
         cuando: Joi.string().required(),
         haciendoQue: Joi.string().required()
-    }).required()
+    }).required() /* hay que poner required a la validacion, sino no le da bola */
 });
