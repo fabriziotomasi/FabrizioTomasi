@@ -28,6 +28,7 @@ db.once("open", () => {
   console.log("Database Connected");
 });
 
+/*Ejecuta Express*/
 const app = express();
 
 app.engine("ejs", ejsMate);
