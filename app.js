@@ -6,18 +6,16 @@ const path = require("path");
 const mongoose = require("mongoose");
 // Herramienta para crear plantillas con ejs
 const ejsMate = require("ejs-mate");
-// Modulo para validacion de datos, formatos, etc.
-const Joi = require("joi");
-// Destructura expSchema puntualmente del schemas.js(porque despues puede haber muchos), para usar en validateExp
-const { expSchema } = require("./schemas.js");
-// Middleware para atrapar los errores en las funciones async y pasarlos a next.
-const catchAsync = require("./utilities/catchAsync");
+// Herramienta que nos permite usar Flash entre otras cosas
+const session = require("express-session");
+const flash = require("connect-flash");
 // Middleware creado para gestionar errores con express
 const ExpressError = require("./utilities/ExpressError");
 // Modulo para enviar solicitudes HTTP PUT o DELETE aunque el cliente no lo soporte
 const methodOverride = require("method-override");
-// Mongoose model de experiencia laboral
-const Exp = require("./models/exp");
+
+// Acceso a la informacion del archivo en Rutas/Experiencia
+const experiencia = require("./rutas/experiencia");
 
 /* Conexion con mongodb */
 mongoose.connect("mongodb://localhost:27017/fabrizio-tomasi");
@@ -37,79 +35,36 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
+app.use(express.static(path.join(__dirname, "public")));
 
-/* Funcion para validad solicitudes segun las condiciones especificadas con Joi en schema.js */
-const validateExp = (req, res, next) => {
-  const { error } = expSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, msg);
-  } else {
-    next();
-  }
+const sessionConfig = {
+  secret: "papanoelnoexiste",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
 };
+app.use(session(sessionConfig));
+app.use(flash());
 
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  next();
+});
+
+// usa el archivo de la carpeta rutas
+app.use("/experiencia", experiencia);
+
+// ruta de la pagina home
 app.get("/", (req, res) => {
   res.render("home");
 });
 
-app.get(
-  "/experiencia",
-  catchAsync(async (req, res) => {
-    const exps = await Exp.find({});
-    res.render("experiencia/index", { exps });
-  })
-);
-
-app.get("/experiencia/nueva", (req, res) => {
-  res.render("experiencia/nueva");
-});
-
-app.post(
-  "/experiencia",
-  validateExp,
-  catchAsync(async (req, res, next) => {
-    const exp = new Exp(req.body.exp);
-    await exp.save();
-    res.redirect(`/experiencia/${exp._id}`);
-  })
-);
-
-app.get(
-  "/experiencia/:id",
-  catchAsync(async (req, res) => {
-    const exp = await Exp.findById(req.params.id);
-    res.render("experiencia/detalles", { exp });
-  })
-);
-
-app.get(
-  "/experiencia/:id/editar",
-  catchAsync(async (req, res) => {
-    const exp = await Exp.findById(req.params.id);
-    res.render("experiencia/editar", { exp });
-  })
-);
-
-app.put(
-  "/experiencia/:id",
-  validateExp,
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const exp = await Exp.findByIdAndUpdate(id, { ...req.body.exp });
-    res.redirect(`/experiencia/${exp._id}`);
-  })
-);
-
-app.delete(
-  "/experiencia/:id",
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    await Exp.findByIdAndDelete(id);
-    res.redirect("/experiencia");
-  })
-);
-
+// ruta de la pagina de contacto
 app.get("/contacto", (req, res) => {
   res.render("contacto/contacto");
 });
