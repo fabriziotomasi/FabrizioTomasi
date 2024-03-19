@@ -5,7 +5,7 @@ module.exports.expSchema = Joi.object({
     exp: Joi.object({
         _id: Joi.number().required(),
         donde: Joi.string().required(),
-        logo: Joi.string().required(),
+        /* logo: Joi.string().required(), */
         cuando: Joi.string().required(),
         haciendoQue: Joi.string().required()
     }).required() /* hay que poner required a la validacion, sino no le da bola */

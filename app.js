@@ -1,3 +1,7 @@
+// dotenv es para ocultar las credenciales de cloudinary
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+};
 // Framework para Node.js
 const express = require("express");
 // Modulo para trabajar con archivos y rutas de archivos

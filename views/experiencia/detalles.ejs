@@ -3,31 +3,33 @@
   <div class="row">
     <div class="col-6 offset-3">
       <div class="card mb-3">
-        <img src="<%= exp.logo %>" class="card-img-top" alt="..." />
-        <div class="card-body">
-          <h5 class="card-title">
-            <%= exp.donde %>
-          </h5>
-          <h6 class="card-text text-muted">
-            <%= exp.cuando %>
-          </h6>
-          <p class="card-text">
-            <%= exp.haciendoQue %>
-          </p>
-        </div>
-        <div class="card-body">
-          <a href="/experiencia">Volver</a>
-        </div>
-        
-        <% if(currentUser) { %>
-        <div class="card-body">
-          <a class="card-link btn btn-warning" href="/experiencia/<%= exp._id%>/editar">Editar
-          </a>
-          <form class="d-inline" action="/experiencia/<%= exp._id %>?_method=DELETE" method="POST">
-            <button class="btn btn-danger">Borrar</button>
-          </form>
-        </div>
-        <% } %>
+        <% for(let img of exp.logo) { %>
+          <img src="<%= img.url %>" class="card-img-top" alt="..." />
+          <% } %>
+            <div class="card-body">
+              <h5 class="card-title">
+                <%= exp.donde %>
+              </h5>
+              <h6 class="card-text text-muted">
+                <%= exp.cuando %>
+              </h6>
+              <p class="card-text">
+                <%= exp.haciendoQue %>
+              </p>
+            </div>
+            <div class="card-body">
+              <a href="/experiencia">Volver</a>
+            </div>
+
+            <% if(currentUser) { %>
+              <div class="card-body">
+                <a class="card-link btn btn-warning" href="/experiencia/<%= exp._id%>/editar">Editar
+                </a>
+                <form class="d-inline" action="/experiencia/<%= exp._id %>?_method=DELETE" method="POST">
+                  <button class="btn btn-danger">Borrar</button>
+                </form>
+              </div>
+              <% } %>
       </div>
     </div>
   </div>

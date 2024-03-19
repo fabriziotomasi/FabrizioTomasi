@@ -4,7 +4,10 @@
     <div class="card mb-3">
       <div class="row">
         <div class="col-md-4">
-          <img src="<%= exp.logo %>" alt="" class="img-fluid" />
+          <!-- <img src="<%= exp.logo %>" alt="" class="img-fluid" /> -->
+          <% for(let img of exp.logo) { %>
+            <img src="<%= img.url %>" class="img-fluid" alt="..." />
+            <% } %>
         </div>
         <div class="col-md-8">
           <div class="card-body">

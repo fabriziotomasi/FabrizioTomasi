@@ -2,7 +2,7 @@
   <div class="row">
     <h1 class="text-center">Agregar Nueva Experiencia Laboral</h1>
     <div class="col-6 offset-3">
-      <form action="/experiencia" method="POST" novalidate class="validated-form">
+      <form action="/experiencia" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
 
         <div class="mb-3">
           <label class="form-label" for="_id">ID</label>
@@ -20,13 +20,14 @@
           </div>
         </div>
 
-        <div class="mb-3">
+        <input type="file" name="logo" id="">
+        <!-- <div class="mb-3">
           <label class="form-label" for="logo">Logo URL</label>
           <input class="form-control" type="text" id="logo" name="exp[logo]" required />
           <div class="valid-feedback">
             Ahora si
           </div>
-        </div>
+        </div> -->
 
         <div class="mb-3">
           <label class="form-label" for="cuando">Cuando</label>
