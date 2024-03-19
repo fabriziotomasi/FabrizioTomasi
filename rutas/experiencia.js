@@ -4,6 +4,8 @@ const router = express.Router();
 const Joi = require("joi");
 // Destructura expSchema puntualmente del schemas.js(porque despues puede haber muchos), para usar en validateExp
 const { expSchema } = require("../schemas.js");
+// Middleware que creamos para verificar si un usuario tiene una sesion ya iniciada.
+const { isLoggedIn } = require("../middleware");
 // Middleware para atrapar los errores en las funciones async y pasarlos a next.
 const catchAsync = require("../utilities/catchAsync");
 // Middleware creado para gestionar errores con express
@@ -30,12 +32,13 @@ router.get(
   })
 );
 
-router.get("/nueva", (req, res) => {
+router.get("/nueva", isLoggedIn, (req, res) => {
   res.render("experiencia/nueva");
 });
 
 router.post(
   "/",
+  isLoggedIn,
   validateExp,
   catchAsync(async (req, res, next) => {
     const exp = new Exp(req.body.exp);
@@ -59,6 +62,7 @@ router.get(
 
 router.get(
   "/:id/editar",
+  isLoggedIn,
   catchAsync(async (req, res) => {
     const exp = await Exp.findById(req.params.id);
     if (!exp) {
@@ -71,6 +75,7 @@ router.get(
 
 router.put(
   "/:id",
+  isLoggedIn,
   validateExp,
   catchAsync(async (req, res) => {
     const { id } = req.params;
@@ -82,6 +87,7 @@ router.put(
 
 router.delete(
   "/:id",
+  isLoggedIn,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     await Exp.findByIdAndDelete(id);

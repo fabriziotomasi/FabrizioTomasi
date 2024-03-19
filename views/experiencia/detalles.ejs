@@ -18,6 +18,8 @@
         <div class="card-body">
           <a href="/experiencia">Volver</a>
         </div>
+        
+        <% if(currentUser) { %>
         <div class="card-body">
           <a class="card-link btn btn-warning" href="/experiencia/<%= exp._id%>/editar">Editar
           </a>
@@ -25,6 +27,7 @@
             <button class="btn btn-danger">Borrar</button>
           </form>
         </div>
+        <% } %>
       </div>
     </div>
   </div>

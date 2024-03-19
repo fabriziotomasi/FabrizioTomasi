@@ -20,7 +20,9 @@
       </div>
     </div>
     <%}%>
-      <div>
-        <a href="/experiencia/nueva">Agregar Nueva Experiencia Laboral</a>
-      </div>
-      <a href="http://localhost:3000/">Volver</a>
+      <% if(currentUser) { %>
+        <div>
+          <a href="/experiencia/nueva">Agregar Nueva Experiencia Laboral</a>
+        </div>
+        <% } %>
+          <a href="/">Volver</a>

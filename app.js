@@ -13,8 +13,15 @@ const flash = require("connect-flash");
 const ExpressError = require("./utilities/ExpressError");
 // Modulo para enviar solicitudes HTTP PUT o DELETE aunque el cliente no lo soporte
 const methodOverride = require("method-override");
+// permite aplicar diferentes estrategias de autenticacion
+const passport = require("passport");
+//estrategia de autenticacion local de passport
+const LocalStrategy = require("passport-local");
+// require user model para usar con passport
+const User = require("./models/user");
 
-// Acceso a la informacion del archivo en Rutas/Experiencia
+// Acceso a la informacion del archivo en Rutas
+const usuarios = require("./rutas/usuarios");
 const experiencia = require("./rutas/experiencia");
 
 /* Conexion con mongodb */
@@ -50,13 +57,23 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+//serialize y deserialize es como almacenamos la informacion en la sesion y como extraemos la informacion respectivamente
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
 });
 
 // usa el archivo de la carpeta rutas
+app.use("/", usuarios);
 app.use("/experiencia", experiencia);
 
 // ruta de la pagina home
@@ -67,6 +84,11 @@ app.get("/", (req, res) => {
 // ruta de la pagina de contacto
 app.get("/contacto", (req, res) => {
   res.render("contacto/contacto");
+});
+
+// ruta de la pagina de habilidades
+app.get("/habilidades", (req, res) => {
+  res.render("habilidades/habilidades");
 });
 
 // esto es para que si la ruta ingresada no es ninguna de las de arriba, creamoes el error de express con 404 y el mensaje y lo pasamos

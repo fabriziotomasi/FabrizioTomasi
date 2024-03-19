@@ -7,6 +7,10 @@ const ExpSchema = new Schema({
   logo: String,
   cuando: String,
   haciendoQue: String,
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 module.exports = mongoose.model("Exp", ExpSchema);
