@@ -1,7 +1,7 @@
 // dotenv es para ocultar las credenciales de cloudinary
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
-};
+}
 // Framework para Node.js
 const express = require("express");
 // Modulo para trabajar con archivos y rutas de archivos
@@ -23,6 +23,10 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 // require user model para usar con passport
 const User = require("./models/user");
+// Helmet helps secure Express apps by setting HTTP response headers.
+const helmet = require("helmet");
+// modulo para prohibir los caracteres especiales en las querys, por razones de seguridad
+const mongoSanitize = require("express-mongo-sanitize");
 
 // Acceso a la informacion del archivo en Rutas
 const usuarios = require("./rutas/usuarios");
@@ -47,19 +51,59 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(mongoSanitize());
 
 const sessionConfig = {
+  name: "session",
   secret: "papanoelnoexiste",
   resave: false,
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
+    // secure: true,
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
 };
 app.use(session(sessionConfig));
 app.use(flash());
+
+const scriptSrcUrls = [
+  "https://stackpath.bootstrapcdn.com/",
+  "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css",
+  "https://kit.fontawesome.com/",
+  "https://cdnjs.cloudflare.com/",
+  "https://cdn.jsdelivr.net",
+];
+const styleSrcUrls = [
+  "https://kit-free.fontawesome.com/",
+  "https://stackpath.bootstrapcdn.com/",
+  "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css",
+  "https://fonts.googleapis.com/",
+  "https://use.fontawesome.com/",
+];
+const connectSrcUrls = [];
+const fontSrcUrls = [];
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: [],
+      connectSrc: ["'self'", ...connectSrcUrls],
+      scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      workerSrc: ["'self'", "blob:"],
+      objectSrc: [],
+      imgSrc: [
+        "'self'",
+        "blob:",
+        "data:",
+        "https://res.cloudinary.com/dos5yw92u/",
+        "https://images.unsplash.com/",
+      ],
+      fontSrc: ["'self'", ...fontSrcUrls],
+    },
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());

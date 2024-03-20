@@ -13,7 +13,6 @@ module.exports.crearExperiencia = async (req, res, next) => {
   const exp = new Exp(req.body.exp);
   exp.logo = req.files.map((f) => ({ url: f.path, filename: f.filename }));
   await exp.save();
-  console.log(exp);
   req.flash("success", "Experiencia laboral agregada exitosamente.");
   res.redirect(`/experiencia/${exp._id}`);
 };
@@ -39,6 +38,8 @@ module.exports.renderEditar = async (req, res) => {
 module.exports.editarExperiencia = async (req, res) => {
   const { id } = req.params;
   const exp = await Exp.findByIdAndUpdate(id, { ...req.body.exp });
+  exp.logo = req.files.map((f => ({ url: f.path, filename: f.filename })));
+  await exp.save();
   req.flash("success", "Experiencia laboral actualizada exitosamente.");
   res.redirect(`/experiencia/${exp._id}`);
 };

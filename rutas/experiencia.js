@@ -22,7 +22,12 @@ router.get("/nueva", isLoggedIn, experiencia.renderNueva);
 router
   .route("/:id")
   .get(catchAsync(experiencia.renderDetalles))
-  .put(isLoggedIn, validateExp, catchAsync(experiencia.editarExperiencia))
+  .put(
+    isLoggedIn,
+    upload.array("logo"),
+    validateExp,
+    catchAsync(experiencia.editarExperiencia)
+  )
   .delete(isLoggedIn, catchAsync(experiencia.eliminarExperiencia));
 
 router.get("/:id/editar", isLoggedIn, catchAsync(experiencia.renderEditar));
