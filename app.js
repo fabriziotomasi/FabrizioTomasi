@@ -33,7 +33,7 @@ const MongoStore = require("connect-mongo");
 const usuarios = require("./rutas/usuarios");
 const experiencia = require("./rutas/experiencia");
 // conexion con atlas
-const dbUrl = "mongodb://localhost:27017/fabrizio-tomasi";
+const dbUrl = process.env.DB_URL;
 
 // Conexion con mongodb
 mongoose.connect(dbUrl);
