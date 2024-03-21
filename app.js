@@ -27,13 +27,16 @@ const User = require("./models/user");
 const helmet = require("helmet");
 // modulo para prohibir los caracteres especiales en las querys, por razones de seguridad
 const mongoSanitize = require("express-mongo-sanitize");
+const MongoStore = require("connect-mongo");
 
 // Acceso a la informacion del archivo en Rutas
 const usuarios = require("./rutas/usuarios");
 const experiencia = require("./rutas/experiencia");
+// conexion con atlas
+const dbUrl = "mongodb://localhost:27017/fabrizio-tomasi";
 
-/* Conexion con mongodb */
-mongoose.connect("mongodb://localhost:27017/fabrizio-tomasi");
+// Conexion con mongodb
+mongoose.connect(dbUrl);
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
@@ -53,7 +56,20 @@ app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(mongoSanitize());
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  touchAfter: 24 * 60 * 60,
+  crypto: {
+    secret: "papanoelnoexiste",
+  },
+});
+
+store.on("error", function (e) {
+  console.log("SESSION STORE ERROR", e);
+});
+
 const sessionConfig = {
+  store,
   name: "session",
   secret: "papanoelnoexiste",
   resave: false,
