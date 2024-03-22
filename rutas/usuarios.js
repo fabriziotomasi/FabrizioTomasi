@@ -6,10 +6,11 @@ const User = require("../models/user");
 const usuarios = require("../controllers/usuarios");
 const { storeReturnTo } = require("../middleware");
 
-router
+/* Desactivo el registro de usuarios porque no  
+  router
   .route("/registro")
   .get(usuarios.renderRegistro)
-  .post(catchAsync(usuarios.registro));
+  .post(catchAsync(usuarios.registro)); */
 
 router
   .route("/login")
